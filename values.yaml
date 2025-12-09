@@ -1,6 +1,9 @@
 # Gateway System Configuration
 namespace: envoy-gateway-system
 
+# Namespace 생성 여부 (false면 기존 namespace 사용)
+createNamespace: true
+
 # EnvoyProxy 설정 (여러 개 지원)
 envoyProxies:
   - name: custom-proxy-config
