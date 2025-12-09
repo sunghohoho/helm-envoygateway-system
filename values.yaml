@@ -1,0 +1,80 @@
+# Gateway System Configuration
+namespace: envoy-gateway-system
+
+# EnvoyProxy 설정 (여러 개 지원)
+envoyProxies:
+  - name: custom-proxy-config
+    provider:
+      type: Kubernetes
+      kubernetes:
+        envoyService:
+          type: LoadBalancer
+          annotations:
+            service.beta.kubernetes.io/aws-load-balancer-type: external
+            service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+            service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+            # service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:region:account:certificate/xxx
+            # service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+
+  - name: custom-proxy-config-internal
+    provider:
+      type: Kubernetes
+      kubernetes:
+        envoyService:
+          type: LoadBalancer
+          annotations:
+            service.beta.kubernetes.io/aws-load-balancer-type: external
+            service.beta.kubernetes.io/aws-load-balancer-scheme: internal
+            service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+
+# GatewayClass 설정 (여러 개 지원)
+gatewayClasses:
+  - name: eg
+    controllerName: gateway.envoyproxy.io/gatewayclass-controller
+    parametersRef:
+      group: gateway.envoyproxy.io
+      kind: EnvoyProxy
+      name: custom-proxy-config
+
+  - name: eg-internal
+    controllerName: gateway.envoyproxy.io/gatewayclass-controller
+    parametersRef:
+      group: gateway.envoyproxy.io
+      kind: EnvoyProxy
+      name: custom-proxy-config-internal
+
+# Gateway 설정 (여러 개 지원)
+gateways:
+  - name: eg
+    namespace: envoy-gateway
+    gatewayClassName: eg
+    listeners:
+      - name: http
+        protocol: HTTP
+        port: 80
+        allowedRoutes:
+          namespaces:
+            from: All
+      - name: https
+        protocol: HTTPS
+        port: 443
+        allowedRoutes:
+          namespaces:
+            from: All
+
+  - name: eg-internal
+    namespace: envoy-gateway
+    gatewayClassName: eg-internal
+    listeners:
+      - name: http
+        protocol: HTTP
+        port: 80
+        allowedRoutes:
+          namespaces:
+            from: All
+      - name: https
+        protocol: HTTPS
+        port: 443
+        allowedRoutes:
+          namespaces:
+            from: All

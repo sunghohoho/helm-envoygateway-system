@@ -1,0 +1,21 @@
+Gateway System이 성공적으로 배포되었습니다!
+
+배포된 리소스:
+- Namespace: {{ .Values.namespace }}
+- EnvoyProxy: {{ len .Values.envoyProxies }}개
+- GatewayClass: {{ len .Values.gatewayClasses }}개
+- Gateway: {{ len .Values.gateways }}개
+
+Gateway 상태 확인:
+{{- range .Values.gateways }}
+  kubectl get gateway {{ .name }} -n {{ .namespace }}
+{{- end }}
+
+LoadBalancer 주소 확인:
+{{- range .Values.gateways }}
+  kubectl get gateway {{ .name }} -n {{ .namespace }} -o jsonpath='{.status.addresses[0].value}'
+{{- end }}
+
+다음 단계:
+1. HTTPRoute를 생성하여 트래픽 라우팅 설정
+2. 애플리케이션별 httproute 차트 배포
