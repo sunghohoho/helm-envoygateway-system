@@ -13,9 +13,19 @@ spec:
   controllerName: {{ .controllerName }}
   {{- with .parametersRef }}
   parametersRef:
-    group: {{ .group }}
-    kind: {{ .kind }}
+    group: {{ .group | default "gateway.envoyproxy.io" }}
+    kind: {{ .kind | default "EnvoyProxy" }}
     name: {{ .name }}
     namespace: {{ $.Values.namespace }}
   {{- end }}
 {{- end }}
+
+# 참고: 다른 템플릿 파일의 값을 직접 참조할 수 없습니다
+# Helm 템플릿은 각각 독립적으로 렌더링되며, values.yaml을 통해서만 데이터를 공유합니다
+# 
+# 올바른 방법:
+# values.yaml에서 parametersRef.name을 명시적으로 지정
+# gatewayClasses:
+#   - name: eg
+#     parametersRef:
+#       name: custom-proxy-config  # ← envoyProxies[0].name과 동일한 값을 입력

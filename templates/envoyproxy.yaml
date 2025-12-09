@@ -16,7 +16,7 @@ spec:
     {{- if eq .provider.type "Kubernetes" }}
     kubernetes:
       envoyService:
-        type: {{ .provider.kubernetes.envoyService.type }}
+        type: {{ .provider.kubernetes.envoyService.type | default "LoadBalancer" }}
         {{- with .provider.kubernetes.envoyService.annotations }}
         annotations:
           {{- toYaml . | nindent 10 }}

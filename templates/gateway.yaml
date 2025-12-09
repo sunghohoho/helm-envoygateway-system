@@ -4,7 +4,7 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: {{ .name }}
-  namespace: {{ .namespace }}
+  namespace: {{ $.Values.namespace }}
   labels:
     {{- include "gateway-system.labels" $ | nindent 4 }}
   annotations:
